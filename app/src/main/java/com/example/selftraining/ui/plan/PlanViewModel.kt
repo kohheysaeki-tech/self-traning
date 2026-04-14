@@ -7,6 +7,7 @@ import com.example.selftraining.data.model.WorkoutPlan
 import com.example.selftraining.data.model.WorkoutSet
 import com.example.selftraining.data.repository.ExerciseRepository
 import com.example.selftraining.data.repository.WorkoutRepository
+import com.example.selftraining.util.DAYS_OF_WEEK_JAPANESE
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -24,7 +25,7 @@ class PlanViewModel @Inject constructor(
     private val exerciseRepository: ExerciseRepository
 ) : ViewModel() {
 
-    val daysOfWeek = listOf("月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日", "日曜日")
+    val daysOfWeek = DAYS_OF_WEEK_JAPANESE
 
     val allExercises: StateFlow<List<Exercise>> = exerciseRepository.getAllExercises()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
@@ -101,7 +102,8 @@ class PlanViewModel @Inject constructor(
     }
 
     private fun getNextDateForDay(dayOfWeek: String): String {
-        val dayIndex = daysOfWeek.indexOf(dayOfWeek) + 1 // 1=月 ... 7=日
+        val dayIndex = daysOfWeek.indexOf(dayOfWeek) + 1 // 1=月(Mon) ... 7=日(Sun)
+        require(dayIndex in 1..7) { "Invalid dayOfWeek: $dayOfWeek" }
         val today = LocalDate.now()
         var date = today
         var attempts = 0

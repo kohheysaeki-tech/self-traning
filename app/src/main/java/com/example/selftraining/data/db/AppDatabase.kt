@@ -2,13 +2,9 @@ package com.example.selftraining.data.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.selftraining.data.model.Exercise
 import com.example.selftraining.data.model.WorkoutPlan
 import com.example.selftraining.data.model.WorkoutSet
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @Database(
     entities = [Exercise::class, WorkoutPlan::class, WorkoutSet::class],
@@ -21,13 +17,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun workoutDao(): WorkoutDao
 
     companion object {
-        fun createCallback(): Callback = object : Callback() {
-            override fun onCreate(db: SupportSQLiteDatabase) {
-                super.onCreate(db)
-                // Preset exercises will be inserted via DatabaseModule after DB is created
-            }
-        }
-
         val PRESET_EXERCISES = listOf(
             Exercise(
                 name = "スクワット",

@@ -22,7 +22,7 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
-        lateinit var database: AppDatabase
+        var database: AppDatabase? = null
         database = Room.databaseBuilder(
             context,
             AppDatabase::class.java,
@@ -31,7 +31,7 @@ object DatabaseModule {
             override fun onCreate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
                 super.onCreate(db)
                 CoroutineScope(Dispatchers.IO).launch {
-                    database.exerciseDao().insertExercises(AppDatabase.PRESET_EXERCISES)
+                    database?.exerciseDao()?.insertExercises(AppDatabase.PRESET_EXERCISES)
                 }
             }
         }).build()
