@@ -58,6 +58,7 @@ class HomeViewModel(private val workoutRepository: WorkoutRepository) : ViewMode
             }
         }
         // 毎分日付ラベルを更新して、日付をまたいでも正しく表示する
+        // viewModelScope はViewModel破棄時に自動キャンセルされるため、リーク不要
         viewModelScope.launch {
             while (true) {
                 delay(60_000L)
