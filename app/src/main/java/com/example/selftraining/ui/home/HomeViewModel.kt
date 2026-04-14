@@ -8,6 +8,7 @@ import com.example.selftraining.data.model.WorkoutSet
 import com.example.selftraining.data.repository.ExerciseRepository
 import com.example.selftraining.data.repository.WorkoutRepository
 import com.example.selftraining.util.getDayOfWeekJapanese
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -27,7 +28,8 @@ class HomeViewModel @Inject constructor(
     private val today: LocalDate = LocalDate.now()
     val todayDateString: String = today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
     val todayDisplayString: String = today.format(DateTimeFormatter.ofPattern("yyyy年M月d日"))
-    val todayDayOfWeek: String = getDayOfWeekJapanese(today.dayOfWeek.value) = MutableStateFlow<WorkoutPlan?>(null)
+    val todayDayOfWeek: String = getDayOfWeekJapanese(today.dayOfWeek.value)
+    private val _todayPlan = MutableStateFlow<WorkoutPlan?>(null)
     val todayPlan: StateFlow<WorkoutPlan?> = _todayPlan.asStateFlow()
 
     private val _todaySets = MutableStateFlow<List<WorkoutSet>>(emptyList())
@@ -96,4 +98,3 @@ class HomeViewModel @Inject constructor(
         }
     }
 }
-

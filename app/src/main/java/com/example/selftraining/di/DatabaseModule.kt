@@ -22,7 +22,8 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
-        var database: AppDatabase? = null
+        // Hiltが提供するシングルトンのため、ラムダからdatabaseを参照できるようlateinitで保持する
+        lateinit var database: AppDatabase
         database = Room.databaseBuilder(
             context,
             AppDatabase::class.java,
@@ -30,8 +31,9 @@ object DatabaseModule {
         ).addCallback(object : androidx.room.RoomDatabase.Callback() {
             override fun onCreate(db: androidx.sqlite.db.SupportSQLiteDatabase) {
                 super.onCreate(db)
+                // 初回DB作成時にプリセット種目を挿入する
                 CoroutineScope(Dispatchers.IO).launch {
-                    database?.exerciseDao()?.insertExercises(AppDatabase.PRESET_EXERCISES)
+                    database.exerciseDao().insertExercises(AppDatabase.PRESET_EXERCISES)
                 }
             }
         }).build()
