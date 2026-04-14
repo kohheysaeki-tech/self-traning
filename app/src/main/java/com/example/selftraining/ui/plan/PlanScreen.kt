@@ -27,6 +27,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SuggestionChip
+import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -45,6 +47,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.selftraining.data.model.Exercise
 import com.example.selftraining.data.model.WorkoutSet
+
+/** 土日はジムの日として扱う曜日 */
+private val GYM_DAYS = setOf("土曜日", "日曜日")
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,6 +83,7 @@ fun PlanScreen(viewModel: PlanViewModel = hiltViewModel()) {
                 val sets = pair?.second ?: emptyList()
                 DayPlanCard(
                     dayOfWeek = day,
+                    isGymDay = day in GYM_DAYS,
                     sets = sets,
                     exercises = exercises,
                     onAddClick = { showDialogForDay = day },
@@ -104,6 +110,7 @@ fun PlanScreen(viewModel: PlanViewModel = hiltViewModel()) {
 @Composable
 fun DayPlanCard(
     dayOfWeek: String,
+    isGymDay: Boolean,
     sets: List<WorkoutSet>,
     exercises: Map<Int, Exercise>,
     onAddClick: () -> Unit,
@@ -119,12 +126,27 @@ fun DayPlanCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = dayOfWeek,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = dayOfWeek,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    // 土日はジムの日バッジを表示（情報表示のみのため onClickは空）
+                    if (isGymDay) {
+                        SuggestionChip(
+                            onClick = {},
+                            label = { Text("🏋️ ジム") },
+                            colors = SuggestionChipDefaults.suggestionChipColors(
+                                containerColor = MaterialTheme.colorScheme.primaryContainer
+                            )
+                        )
+                    }
+                }
                 IconButton(onClick = onAddClick) {
                     Icon(
                         Icons.Default.Add,
@@ -135,7 +157,7 @@ fun DayPlanCard(
             }
             if (sets.isEmpty()) {
                 Text(
-                    text = "メニューなし",
+                    text = if (isGymDay) "ジムメニューなし（種目一覧からジム向け種目を追加できます）" else "メニューなし",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(vertical = 4.dp)
