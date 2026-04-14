@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.selftraining.data.model.WorkoutPlan
 import com.example.selftraining.data.model.WorkoutSetWithExercise
 import com.example.selftraining.data.repository.WorkoutRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
@@ -31,6 +32,10 @@ class HomeViewModel(private val workoutRepository: WorkoutRepository) : ViewMode
             }
         }
 
+    /** 今日の日付ラベル（StateFlowで保持し、日付が変わっても更新される） */
+    private val _todayLabel = MutableStateFlow(buildTodayLabel())
+    val todayLabel: StateFlow<String> = _todayLabel.asStateFlow()
+
     /** 今日のプラン */
     val todayPlan: StateFlow<WorkoutPlan?> = workoutRepository
         .getPlanByDayOfWeek(todayDayIndex)
@@ -52,6 +57,13 @@ class HomeViewModel(private val workoutRepository: WorkoutRepository) : ViewMode
                 }
             }
         }
+        // 毎分日付ラベルを更新して、日付をまたいでも正しく表示する
+        viewModelScope.launch {
+            while (true) {
+                delay(60_000L)
+                _todayLabel.value = buildTodayLabel()
+            }
+        }
     }
 
     /** チェックボックスのトグル */
@@ -70,8 +82,8 @@ class HomeViewModel(private val workoutRepository: WorkoutRepository) : ViewMode
         }
     }
 
-    /** 今日の日付文字列 */
-    fun getTodayLabel(): String {
+    /** 今日の日付ラベルを生成する */
+    private fun buildTodayLabel(): String {
         val date = LocalDate.now()
         val dayNames = listOf("月", "火", "水", "木", "金", "土", "日")
         val dayName = dayNames[todayDayIndex]

@@ -25,7 +25,7 @@ import com.example.selftraining.data.model.WorkoutSetWithExercise
 fun HomeScreen(viewModel: HomeViewModel) {
     val todayPlan by viewModel.todayPlan.collectAsStateWithLifecycle()
     val todaySets by viewModel.todaySets.collectAsStateWithLifecycle()
-    val todayLabel = remember { viewModel.getTodayLabel() }
+    val todayLabel by viewModel.todayLabel.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {

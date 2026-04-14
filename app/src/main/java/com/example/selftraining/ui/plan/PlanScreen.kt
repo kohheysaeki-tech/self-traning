@@ -215,7 +215,8 @@ private fun AddWorkoutSetDialog(
     onDismiss: () -> Unit,
     onConfirm: (exerciseId: Long, sets: Int, reps: Int, weight: Float) -> Unit
 ) {
-    var selectedExercise by remember { mutableStateOf(exercises.firstOrNull()) }
+    // exercises をキーにすることで、種目リスト取得後に初期値を正しく設定する
+    var selectedExercise by remember(exercises) { mutableStateOf(exercises.firstOrNull()) }
     var setsText by remember { mutableStateOf("3") }
     var repsText by remember { mutableStateOf("15") }
     var weightText by remember { mutableStateOf("0") }
